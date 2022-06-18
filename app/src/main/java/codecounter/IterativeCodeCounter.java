@@ -21,25 +21,6 @@ public class IterativeCodeCounter implements CodeCounter {
             }
 
             setMultilineCommentTagOpen(currentLine);
-
-            // regardless of line of code or not, we need to check for opening and closing tags?
-            // what are we checking then?
-            // a) " operate() /* " - opens multiline and is code
-            // b) " comment */ anotherOperation() " - closes multiline and is code
-            // c) " /* comment " - opens multiline and is not code
-            // d) " comment */ " - closes multiline and is not code
-            // e) " */ "aDifferentOperation() /* " - is code and both closes multiline and opens multiline
-            // what does this tell us?
-            // we have at least 5 cases and order matters!
-            // if open tag on line is followed by close tag on line then closed
-            // if open tag on line is not followed by close tag on line then opened
-            // if close tag on line is followed by open tag on line then opened
-            // if close tag on line and is not followed by open then closed
-            // simplification?:
-            // if last tag on line is open then opened
-            // if last tage on line closed then closed
-            // we must be able to find tags and check their order
-            //
         }
 
         return lineCount;
