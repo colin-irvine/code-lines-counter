@@ -15,7 +15,10 @@ public class TestCodeCounter {
     @BeforeAll
     void setUp() {
         this.lineProvider = new InMemoryLineProvider();
-        this.codeCounter = new IterativeCodeCounter(this.lineProvider);
+        this.codeCounter = new IterativeCodeCounter(this.lineProvider
+                , "*/"
+                , "/*"
+                , "//");
     }
 
     @BeforeEach
