@@ -1,5 +1,7 @@
 package codecounter;
 
+import java.io.IOException;
+
 public interface CodeCounter {
-    int countLines();
+    int countLines() throws IOException;
 }
