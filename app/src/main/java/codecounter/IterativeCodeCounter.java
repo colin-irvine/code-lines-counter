@@ -1,5 +1,7 @@
 package codecounter;
 
+import java.io.IOException;
+
 public class IterativeCodeCounter implements CodeCounter {
     private LineProvider lineProvider;
     private boolean multilineCommentTagOpen;
@@ -9,7 +11,7 @@ public class IterativeCodeCounter implements CodeCounter {
         this.multilineCommentTagOpen = false;
     }
     @Override
-    public int countLines() {
+    public int countLines() throws IOException {
         int lineCount = 0;
         String currentLine = "";
 

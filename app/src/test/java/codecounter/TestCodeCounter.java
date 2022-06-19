@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -24,7 +26,7 @@ public class TestCodeCounter {
     }
 
     @Test
-    void testCountLinesShouldCountLineOfCodeWhenOnlyCode(){
+    void testCountLinesShouldCountLineOfCodeWhenOnlyCode() throws IOException {
         int expected = 1, actual;
         this.lineProvider.addLine("import org.junit.api.Test;");
 
@@ -33,7 +35,7 @@ public class TestCodeCounter {
     }
 
     @Test
-    void testCountLinesShouldNotCountLineOfCodeWhenLineIsBlank(){
+    void testCountLinesShouldNotCountLineOfCodeWhenLineIsBlank() throws IOException {
         int expected = 0, actual;
         this.lineProvider.addLine("");
         this.lineProvider.addLine(" ");
@@ -45,7 +47,7 @@ public class TestCodeCounter {
     }
 
     @Test
-    void testCountLinesShouldNotCountLineOfCodeWhenOnlySingleLineComment(){
+    void testCountLinesShouldNotCountLineOfCodeWhenOnlySingleLineComment() throws IOException {
         int expected = 0, actual;
         this.lineProvider.addLine("//");
 
@@ -54,7 +56,7 @@ public class TestCodeCounter {
     }
 
     @Test
-    void testCountLinesShouldCountLineOfCodeWhenBothCodeAndSingleLineComment(){
+    void testCountLinesShouldCountLineOfCodeWhenBothCodeAndSingleLineComment() throws IOException {
         int expected = 1, actual;
         this.lineProvider.addLine("int x = 0; //");
 
@@ -63,7 +65,7 @@ public class TestCodeCounter {
     }
 
     @Test
-    void testCountLinesShouldCountLineOfCodeWhenCodeFollowedByMultilineComment(){
+    void testCountLinesShouldCountLineOfCodeWhenCodeFollowedByMultilineComment() throws IOException {
         int expected = 1, actual;
         this.lineProvider.addLine("doSomething(); /* */");
 
@@ -72,7 +74,7 @@ public class TestCodeCounter {
     }
 
     @Test
-    void testCountLinesShouldCountLineOfCodeWhenMultilineCommentFollowedByCode(){
+    void testCountLinesShouldCountLineOfCodeWhenMultilineCommentFollowedByCode() throws IOException {
         int expected = 1, actual;
         this.lineProvider.addLine("/* */ int x = 1;");
 
@@ -81,7 +83,7 @@ public class TestCodeCounter {
     }
 
     @Test
-    void testCountLinesShouldNotCountLinesOfCodeWhenOnlyWhiteSpaces(){
+    void testCountLinesShouldNotCountLinesOfCodeWhenOnlyWhiteSpaces() throws IOException {
         int expected = 0, actual;
 
         this.lineProvider.addLine("");
@@ -94,7 +96,7 @@ public class TestCodeCounter {
     }
 
     @Test
-    void testCountLinesShouldNotCountLinesOfCodeWhenOnlySingleComments(){
+    void testCountLinesShouldNotCountLinesOfCodeWhenOnlySingleComments() throws IOException {
         int expected = 0, actual;
 
         this.lineProvider.addLine("//");
@@ -106,7 +108,7 @@ public class TestCodeCounter {
     }
 
     @Test
-    void testCountLinesShouldNotCountLinesOfCodeWhenLineAreMultilineComment(){
+    void testCountLinesShouldNotCountLinesOfCodeWhenLineAreMultilineComment() throws IOException {
         int expected = 0, actual;
 
         this.lineProvider.addLine("/******");
@@ -118,7 +120,7 @@ public class TestCodeCounter {
     }
 
     @Test
-    void testCountCodeLinesCounts2LinesWhenLinesAreCodeAndMultilineComments(){
+    void testCountCodeLinesCounts2LinesWhenLinesAreCodeAndMultilineComments() throws IOException {
         int expected = 2, actual;
 
         this.lineProvider.addLine("/* start of mulitline comment");
@@ -132,7 +134,7 @@ public class TestCodeCounter {
     }
 
     @Test
-    void testCountCodeLinesCounts3LinesWhenLinesAreCodeAndMultilineComments(){
+    void testCountCodeLinesCounts3LinesWhenLinesAreCodeAndMultilineComments() throws IOException {
         int expected = 3, actual;
 
         this.lineProvider.addLine("import something.from.somewhere");
@@ -150,7 +152,7 @@ public class TestCodeCounter {
     }
 
     @Test
-    void testCountCodeLinesCounts9LinesWhenLinesAreCodeAndMultilineComments(){
+    void testCountCodeLinesCounts9LinesWhenLinesAreCodeAndMultilineComments() throws IOException {
         int expected = 9, actual;
 
         this.lineProvider.addLine("    private boolean isLineOfCode(String line) {");
