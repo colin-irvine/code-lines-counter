@@ -77,6 +77,33 @@ public class TestCodeCounter {
     }
 
     @Test
+    void testCountLinesShouldCountLineOfCodeWhenCodeSurroundedByMultilineComment() throws IOException {
+        int expected = 1, actual;
+        this.lineProvider.addLine("/* */ doSomething(); /* */");
+
+        actual = this.codeCounter.countLines();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testCountLinesShouldCountLineOfCodeWhenCodeIsAfterMultilineCommentWithMultilineCommentAfter() throws IOException {
+        int expected = 1, actual;
+        this.lineProvider.addLine("*/ doSomething(); /*");
+
+        actual = this.codeCounter.countLines();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testCountLinesShouldCountNotLineOfCodeWhenWhiteSpaceSurroundedByMultilineComment() throws IOException {
+        int expected = 0, actual;
+        this.lineProvider.addLine("/* */ /* */ /* */ /* */");
+
+        actual = this.codeCounter.countLines();
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void testCountLinesShouldCountLineOfCodeWhenMultilineCommentFollowedByCode() throws IOException {
         int expected = 1, actual;
         this.lineProvider.addLine("/* */ int x = 1;");

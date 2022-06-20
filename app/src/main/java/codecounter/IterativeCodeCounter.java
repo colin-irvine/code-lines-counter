@@ -38,18 +38,20 @@ public class IterativeCodeCounter implements CodeCounter {
             setMultilineCommentTagOpen(currentLine);
         }
         // removing state after function finishes
+        // TODO: Consider removing this state completely
         this.multilineCommentTagOpen = false;
 
         return lineCount;
     }
 
     private boolean isLineOfCode(String line) {
+        String cleanedLine = removeMultilineComments(line);
         // if contains only whitespace, not code
-        if (line.isBlank())
+        if (cleanedLine.isBlank())
             return false;
 
         // if line is only whitespace and comments, not code
-        if (isLineCommentedOut(line))
+        if (isLineCommentedOut(cleanedLine))
             return false;
 
         // if line is inside multiline comment, not code
@@ -86,8 +88,8 @@ public class IterativeCodeCounter implements CodeCounter {
     private void setMultilineCommentTagOpen(String line) {
         int closingTagIndex, openingTagIndex;
 
-        closingTagIndex = line.indexOf(this.closingCommentTag);
-        openingTagIndex = line.indexOf(this.openingCommentTag);
+        closingTagIndex = line.lastIndexOf(this.closingCommentTag);
+        openingTagIndex = line.lastIndexOf(this.openingCommentTag);
 
         if (closingTagIndex == -1 && openingTagIndex == -1)
             return;
@@ -97,5 +99,35 @@ public class IterativeCodeCounter implements CodeCounter {
 
         if (openingTagIndex > closingTagIndex)
             this.multilineCommentTagOpen = true;
+    }
+
+    private String removeMultilineComments(String line) {
+        String commentsRemoved = line;
+        Integer openCommentIndex, closedCommentIndex;
+
+        // very interesting, for "*/ doSomething(); /*"
+        // this code produces "*/ doSomething(); doSomething(); doSomething(); /*"
+        // is this due to the tags needed to follow each other?
+        // order matters yo!
+        // while
+        openCommentIndex = line.indexOf("/*");
+        closedCommentIndex = line.indexOf("*/");
+
+        while ( (closedCommentIndex > openCommentIndex) &&(openCommentIndex > -1 && closedCommentIndex > -1)) {
+            commentsRemoved = extractBeforeComment(commentsRemoved, openCommentIndex)
+                    + extractAfterComment(commentsRemoved, closedCommentIndex);
+            openCommentIndex = commentsRemoved.indexOf("/*");
+            closedCommentIndex = commentsRemoved.indexOf("*/");
+        }
+
+        return commentsRemoved;
+    }
+
+    private String extractBeforeComment(String line, int openCommentIndex) {
+        return line.substring(0, openCommentIndex);
+    }
+
+    private String extractAfterComment(String line, int closedCommentIndex) {
+        return line.substring(closedCommentIndex + 2);
     }
 }
