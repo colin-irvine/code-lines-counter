@@ -1,17 +1,7 @@
 package codecounter;
 
-import javax.sound.sampled.Line;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-/*
-
-Client should do everything somewhat abstractly.
-It is up to main or whoever imports the client to
-use its methods?
-This might cause some changes, quite quickly...
-This guy is really looking like a CLIClient as we keep going
- */
 
 /**
  *  What is this guy responsible for?

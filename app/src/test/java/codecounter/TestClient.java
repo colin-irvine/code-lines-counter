@@ -1,14 +1,7 @@
 package codecounter;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.*;
 /*
 - Service is responsible for handling requests and returning appropriate responses/
@@ -36,10 +29,7 @@ public class TestClient {
         String userDirectory = System.getProperty("user.dir");
         String filePath = userDirectory + "/src/test/resources/TestCodeClass.java";
         CodeCounter codeCounter = null;
-        // hmmmm... So what's it going to be then, eh?
-        // if System.getProperty("user.dir"); returns where the JAR is invoked from then we might be okay?
-        // Tests: When given a relative path, no exception is thrown
-        // When given an absolute path, no exception is thrown
+
         Exception exc = assertThrows(Exception.class, () -> new Client(filePath, codeCounter));
         assertEquals("[Error]: Code Counter is null.", exc.getMessage());
     }
