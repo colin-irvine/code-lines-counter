@@ -10,17 +10,17 @@ import java.io.IOException;
  */
 public class Client {
     private CodeCounter codeCounter;
-    private LineProvider lineProvider;
+    private LineReader lineReader;
     private String message;
 
     public Client(String filePath) throws FileNotFoundException {
         setDefaultLineProvider(filePath);
-        setDefaultCodeCounter(this.lineProvider);
+        setDefaultCodeCounter(this.lineReader);
     };
 
-    public Client(LineProvider lineProvider) throws Exception {
-        setLineProvider(lineProvider);
-        setDefaultCodeCounter(this.lineProvider);
+    public Client(LineReader lineReader) throws Exception {
+        setLineProvider(lineReader);
+        setDefaultCodeCounter(this.lineReader);
     }
 
     public Client(String filePath, CodeCounter codeCounter) throws Exception {
@@ -28,27 +28,27 @@ public class Client {
         setCodeCounter(codeCounter);
     }
 
-    public Client(LineProvider lineProvider, CodeCounter codeCounter) throws Exception {
-        setLineProvider(lineProvider);
+    public Client(LineReader lineReader, CodeCounter codeCounter) throws Exception {
+        setLineProvider(lineReader);
         setCodeCounter(codeCounter);
     }
 
     private void setDefaultLineProvider(String filePath) throws FileNotFoundException {
-        this.lineProvider = new FileLineProvider(filePath);
+        this.lineReader = new FileLineReader(filePath);
     }
 
-    private void setDefaultCodeCounter(LineProvider lineProvider) {
-        this.codeCounter = new IterativeCodeCounter(lineProvider
+    private void setDefaultCodeCounter(LineReader lineReader) {
+        this.codeCounter = new IterativeCodeCounter(lineReader
                                                     , "*/"
                                                     , "/*"
                                                     ,"//");
     }
 
-    private void setLineProvider(LineProvider lineProvider) throws Exception {
-        if (lineProvider == null)
-            throw new Exception("[Error]: Line Provicer is null.");
+    private void setLineProvider(LineReader lineReader) throws Exception {
+        if (lineReader == null)
+            throw new Exception("[Error]: Line Reader is null.");
 
-        this.lineProvider = lineProvider;
+        this.lineReader = lineReader;
     }
 
     private void setCodeCounter(CodeCounter codeCounter) throws Exception {

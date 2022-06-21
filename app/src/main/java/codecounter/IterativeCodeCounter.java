@@ -3,17 +3,17 @@ package codecounter;
 import java.io.IOException;
 
 public class IterativeCodeCounter implements CodeCounter {
-    private LineProvider lineProvider;
+    private LineReader lineReader;
     private boolean multilineCommentTagOpen;
     private String closingCommentTag;
     private String openingCommentTag;
     private String singleCommentTag;
 
-    public IterativeCodeCounter(LineProvider lineProvider
+    public IterativeCodeCounter(LineReader lineReader
             , String closingCommentTag
             , String openingCommentTag
             , String singleCommentTag) {
-        this.lineProvider = lineProvider;
+        this.lineReader = lineReader;
         this.multilineCommentTagOpen = false;
         this.closingCommentTag = closingCommentTag;
         this.openingCommentTag = openingCommentTag;
@@ -26,7 +26,7 @@ public class IterativeCodeCounter implements CodeCounter {
 
         this.multilineCommentTagOpen = false;
 
-        while ((currentLine = this.lineProvider.getLine()) != null) {
+        while ((currentLine = this.lineReader.getLine()) != null) {
             if (isLineOfCode(currentLine)){
                 lineCount++;
             }
@@ -74,7 +74,7 @@ public class IterativeCodeCounter implements CodeCounter {
             return true;
 
         return cleanedLine.startsWith(this.openingCommentTag)
-                && false == line.contains("*/");
+                && false == line.contains(this.closingCommentTag);
     }
 
     private boolean isLinePartOfMultilineComment() {
@@ -101,7 +101,6 @@ public class IterativeCodeCounter implements CodeCounter {
         String commentsRemoved = line;
         Integer openCommentIndex, closedCommentIndex;
 
-        // probably descriptive enough except use of hardcoded variables
         openCommentIndex = line.indexOf(this.openingCommentTag);
         closedCommentIndex = line.indexOf(this.closingCommentTag);
 

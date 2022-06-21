@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class InMemoryLineProvider implements LineProvider {
+public class InMemoryLineReader implements LineReader {
     private List<String> lines;
     private Iterator<String> lineIterator;
 
-    InMemoryLineProvider() {
+    InMemoryLineReader() {
         this.lines = new ArrayList<>();
         this.lineIterator = this.lines.iterator();
     }

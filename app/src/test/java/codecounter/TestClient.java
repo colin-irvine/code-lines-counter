@@ -17,11 +17,11 @@ public class TestClient {
     }
 
     @Test
-    void testClientThrowsExceptionWhenLineProviderIsNull() throws Exception {
-        LineProvider lineProvider = null;
+    void testClientThrowsExceptionWhenLineReaderIsNull() throws Exception {
+        LineReader lineReader = null;
 
-        Exception exc = assertThrows(Exception.class, () -> new Client(lineProvider));
-        assertEquals("[Error]: Line Provider is null.", exc.getMessage());
+        Exception exc = assertThrows(Exception.class, () -> new Client(lineReader));
+        assertEquals("[Error]: Line Reader is null.", exc.getMessage());
     }
 
     @Test
@@ -36,10 +36,10 @@ public class TestClient {
 
     @Test
     void testClientThrowsExceptionWhenLineProviderIsGoodAndCodeCounterIsNull() throws Exception {
-        LineProvider lineProvider = new InMemoryLineProvider();
+        LineReader lineReader = new InMemoryLineReader();
         CodeCounter codeCounter = null;
 
-        Exception exc = assertThrows(Exception.class, () -> new Client(lineProvider, codeCounter));
+        Exception exc = assertThrows(Exception.class, () -> new Client(lineReader, codeCounter));
         assertEquals("[Error]: Code Counter is null.", exc.getMessage());
     }
 
