@@ -5,10 +5,6 @@ import java.io.IOException;
 public class IterativeCodeCounter implements CodeCounter {
     private LineProvider lineProvider;
     private boolean multilineCommentTagOpen;
-    // hmmmmm, maybe have a delegate for this?
-    // responsibility would be to know/determine code language and assign comment tags
-    // commenter = init("determined code language") then commenter.getClosingTag(), commenter.getOpeningTag()
-    // be careful that you are not over engineering! this could simply be a map of language keys to a map of tags
     private String closingCommentTag;
     private String openingCommentTag;
     private String singleCommentTag;
@@ -105,19 +101,15 @@ public class IterativeCodeCounter implements CodeCounter {
         String commentsRemoved = line;
         Integer openCommentIndex, closedCommentIndex;
 
-        // very interesting, for "*/ doSomething(); /*"
-        // this code produces "*/ doSomething(); doSomething(); doSomething(); /*"
-        // is this due to the tags needed to follow each other?
-        // order matters yo!
-        // while
-        openCommentIndex = line.indexOf("/*");
-        closedCommentIndex = line.indexOf("*/");
+        // probably descriptive enough except use of hardcoded variables
+        openCommentIndex = line.indexOf(this.openingCommentTag);
+        closedCommentIndex = line.indexOf(this.closingCommentTag);
 
-        while ( (closedCommentIndex > openCommentIndex) &&(openCommentIndex > -1 && closedCommentIndex > -1)) {
+        while (hasCommentsToRemove(openCommentIndex, closedCommentIndex)) {
             commentsRemoved = extractBeforeComment(commentsRemoved, openCommentIndex)
                     + extractAfterComment(commentsRemoved, closedCommentIndex);
-            openCommentIndex = commentsRemoved.indexOf("/*");
-            closedCommentIndex = commentsRemoved.indexOf("*/");
+            openCommentIndex = commentsRemoved.indexOf(this.openingCommentTag);
+            closedCommentIndex = commentsRemoved.indexOf(this.closingCommentTag);
         }
 
         return commentsRemoved;
@@ -129,5 +121,18 @@ public class IterativeCodeCounter implements CodeCounter {
 
     private String extractAfterComment(String line, int closedCommentIndex) {
         return line.substring(closedCommentIndex + 2);
+    }
+
+    private boolean hasCommentsToRemove(Integer openingCommentIndex, Integer closingCommentIndex) {
+        return hasClosingTagForOpeningTag(openingCommentIndex, closingCommentIndex) &&
+                hasBothOpeningAndClosingTags(openingCommentIndex, closingCommentIndex);
+    }
+
+    private boolean hasClosingTagForOpeningTag(Integer openingCommentIndex, Integer closingCommentIndex) {
+        return closingCommentIndex > openingCommentIndex;
+    }
+
+    private boolean hasBothOpeningAndClosingTags(Integer openingCommentIndex, Integer closingCommentIndex) {
+        return openingCommentIndex > -1 && closingCommentIndex > -1;
     }
 }
