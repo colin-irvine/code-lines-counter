@@ -3,21 +3,17 @@ package codecounter;
 import java.io.IOException;
 
 public class IterativeCodeCounter implements CodeCounter {
-    private LineProvider lineProvider;
+    private LineReader lineReader;
     private boolean multilineCommentTagOpen;
-    // hmmmmm, maybe have a delegate for this?
-    // responsibility would be to know/determine code language and assign comment tags
-    // commenter = init("determined code language") then commenter.getClosingTag(), commenter.getOpeningTag()
-    // be careful that you are not over engineering! this could simply be a map of language keys to a map of tags
     private String closingCommentTag;
     private String openingCommentTag;
     private String singleCommentTag;
 
-    public IterativeCodeCounter(LineProvider lineProvider
+    public IterativeCodeCounter(LineReader lineReader
             , String closingCommentTag
             , String openingCommentTag
             , String singleCommentTag) {
-        this.lineProvider = lineProvider;
+        this.lineReader = lineReader;
         this.multilineCommentTagOpen = false;
         this.closingCommentTag = closingCommentTag;
         this.openingCommentTag = openingCommentTag;
@@ -30,7 +26,7 @@ public class IterativeCodeCounter implements CodeCounter {
 
         this.multilineCommentTagOpen = false;
 
-        while ((currentLine = this.lineProvider.getLine()) != null) {
+        while ((currentLine = this.lineReader.getLine()) != null) {
             if (isLineOfCode(currentLine)){
                 lineCount++;
             }
@@ -38,18 +34,20 @@ public class IterativeCodeCounter implements CodeCounter {
             setMultilineCommentTagOpen(currentLine);
         }
         // removing state after function finishes
+        // TODO: Consider removing this state completely
         this.multilineCommentTagOpen = false;
 
         return lineCount;
     }
 
     private boolean isLineOfCode(String line) {
+        String cleanedLine = removeMultilineComments(line);
         // if contains only whitespace, not code
-        if (line.isBlank())
+        if (cleanedLine.isBlank())
             return false;
 
         // if line is only whitespace and comments, not code
-        if (isLineCommentedOut(line))
+        if (isLineCommentedOut(cleanedLine))
             return false;
 
         // if line is inside multiline comment, not code
@@ -76,7 +74,7 @@ public class IterativeCodeCounter implements CodeCounter {
             return true;
 
         return cleanedLine.startsWith(this.openingCommentTag)
-                && false == line.contains("*/");
+                && false == line.contains(this.closingCommentTag);
     }
 
     private boolean isLinePartOfMultilineComment() {
@@ -86,8 +84,8 @@ public class IterativeCodeCounter implements CodeCounter {
     private void setMultilineCommentTagOpen(String line) {
         int closingTagIndex, openingTagIndex;
 
-        closingTagIndex = line.indexOf(this.closingCommentTag);
-        openingTagIndex = line.indexOf(this.openingCommentTag);
+        closingTagIndex = line.lastIndexOf(this.closingCommentTag);
+        openingTagIndex = line.lastIndexOf(this.openingCommentTag);
 
         if (closingTagIndex == -1 && openingTagIndex == -1)
             return;
@@ -97,5 +95,43 @@ public class IterativeCodeCounter implements CodeCounter {
 
         if (openingTagIndex > closingTagIndex)
             this.multilineCommentTagOpen = true;
+    }
+
+    private String removeMultilineComments(String line) {
+        String commentsRemoved = line;
+        Integer openCommentIndex, closedCommentIndex;
+
+        openCommentIndex = line.indexOf(this.openingCommentTag);
+        closedCommentIndex = line.indexOf(this.closingCommentTag);
+
+        while (hasCommentsToRemove(openCommentIndex, closedCommentIndex)) {
+            commentsRemoved = extractBeforeComment(commentsRemoved, openCommentIndex)
+                    + extractAfterComment(commentsRemoved, closedCommentIndex);
+            openCommentIndex = commentsRemoved.indexOf(this.openingCommentTag);
+            closedCommentIndex = commentsRemoved.indexOf(this.closingCommentTag);
+        }
+
+        return commentsRemoved;
+    }
+
+    private String extractBeforeComment(String line, int openCommentIndex) {
+        return line.substring(0, openCommentIndex);
+    }
+
+    private String extractAfterComment(String line, int closedCommentIndex) {
+        return line.substring(closedCommentIndex + 2);
+    }
+
+    private boolean hasCommentsToRemove(Integer openingCommentIndex, Integer closingCommentIndex) {
+        return hasClosingTagForOpeningTag(openingCommentIndex, closingCommentIndex) &&
+                hasBothOpeningAndClosingTags(openingCommentIndex, closingCommentIndex);
+    }
+
+    private boolean hasClosingTagForOpeningTag(Integer openingCommentIndex, Integer closingCommentIndex) {
+        return closingCommentIndex > openingCommentIndex;
+    }
+
+    private boolean hasBothOpeningAndClosingTags(Integer openingCommentIndex, Integer closingCommentIndex) {
+        return openingCommentIndex > -1 && closingCommentIndex > -1;
     }
 }

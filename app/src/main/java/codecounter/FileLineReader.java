@@ -5,10 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class FileLineProvider implements LineProvider {
+public class FileLineReader implements LineReader {
     private FileReader fileReader;
     private BufferedReader bufferedReader;
-    public FileLineProvider(String filePath) throws FileNotFoundException {
+    public FileLineReader(String filePath) throws FileNotFoundException {
         this.fileReader = new FileReader(filePath);
         this.bufferedReader = new BufferedReader( this.fileReader);
     }
